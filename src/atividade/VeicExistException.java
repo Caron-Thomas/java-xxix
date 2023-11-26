@@ -3,11 +3,11 @@ package atividade;
 public class VeicExistException extends Exception{
 	
 	public void veicExistException() {
-		System.out.println("J√° existe um ve√≠culo com esta placa");
+		System.out.println("J· existe um veÌculo com esta placa");
 	}
 	
 	public void veicNaoExistException() {
-		System.out.println("Ve√≠culo n√£o encontrado na base de dados.");
+		System.out.println("veÌculo n„o encontrado na base de dados.");
 	}
 
 }
