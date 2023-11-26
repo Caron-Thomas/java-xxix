@@ -93,7 +93,7 @@ public class BDVeiculos {
 
 	public static void excluirVeiculoCarga(String placa)throws VeicExistException {
 			int posicao = -1;
-			posicao = buscaPlaca(placa, 1);
+			posicao = buscaPlaca(placa, 2);
 			try {
 				vetCarga.remove(posicao);
 			} catch(IndexOutOfBoundsException ioobe) {
