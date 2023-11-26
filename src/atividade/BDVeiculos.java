@@ -1,135 +1,147 @@
 package atividade;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BDVeiculos {
 	//vetores  utilizados durante periodo de execução 
-	private static Passeio vetPasseio[] = new Passeio[5];
-	private static Carga   vetCarga[]   = new Carga[5];
+	private static List<Passeio> vetPasseio = new ArrayList<>();
+	private static List<Carga>   vetCarga   = new ArrayList<>();
 	
-	public static boolean cadastraVPasseio(int i, Passeio vPasseio) {
+	public static boolean cadastraVPasseio(Passeio vPasseio) {
 		if(vPasseio == null)
 			return true;
 		
-		vetPasseio[i] = vPasseio;
-		System.out.println("\n>>> Veículo salvo na posição "+ i +" <<<");				
+		vetPasseio.add(vPasseio);
+		System.out.println("\n>>> Veículo salvo <<<");				
 		return true;
 	}
 	
-	public static int achaEndVagoPasseio() {
-		for (int i = 0; i < vetPasseio.length; i++) {
-			if(vetPasseio[i] == null)
-				return i;
-		}
-		return -1;
-	}
-	
-	public static boolean cadastraVCarga(int i, Carga vCarga) {
+	public static boolean cadastraVCarga(Carga vCarga) {
 		if(vCarga == null)
 			return true;
 		
-		vetCarga[i] = vCarga;
-		System.out.println("\n>>> Veículo salvo na posição "+ i +" <<<");				
+		vetCarga.add(vCarga);
+		System.out.println("\n>>> Veículo salvo <<<");				
 		return true;
 	}
 	
-	public static int achaEndVagoCarga() {
-		for (int i = 0; i < vetCarga.length; i++) {
-			if(vetCarga[i] == null)
-				return i;
-		}
-		return -1;
-	}
-	
-	public static int buscaPlaca(String placa, int j) throws VeicExistException {
-		try {
-			switch(j){
+	public static int buscaPlaca(String placa, int j) {
+		switch(j){
 				case 1:
-					for(int i = 0; i < vetPasseio.length; i++) {
-						if(vetPasseio[i].getPlaca().toLowerCase().equals(placa.toLowerCase())) {
+					for(int i = 0; i < vetPasseio.size() ; i++) {
+						if(vetPasseio.get(i).getPlaca().toLowerCase().equals(placa.toLowerCase())) {
 							return i;
 						}
 					}
+					break;
 				case 2:
-					for(int i = 0; i < vetCarga.length; i++) {
-						if(vetCarga[i].getPlaca().toLowerCase().equals(placa.toLowerCase())) {
+					for(int i = 0; i < vetCarga.size(); i++) {
+						if(vetCarga.get(i).getPlaca().toLowerCase().equals(placa.toLowerCase())) {
 							return i;
 						}
-					}	
+					}
+					break;
 				}
-		} catch(NullPointerException npe) {
-				throw new VeicExistException();
-			}
 		return -1;
 	} 
 	
-	public static void imprimirVeiculoPasseio(String placa) throws VeicExistException {
-		if(placa != null) {
+	public static void imprimirVeiculoPasseio(String placa) {
+		try {
+			if(placa != null) {
+				int posicao = -1;
+				posicao = buscaPlaca(placa, 1);
+				imprimirDetalhePasseio(posicao);
+			}
+			 else {
+				for (int i = 0; i < vetPasseio.size(); i++) {
+					imprimirDetalhePasseio(i);
+				}
+			 }
+		} catch(VeicExistException vee) {
+				 vee.veicNaoExistException();  ;
+			}
+	}
+	
+	public static void imprimirCarga(String placa) {
+		try {
+			if(placa != null) {
+				int posicao = -1;
+				posicao = buscaPlaca(placa, 2);
+				imprimirDetalheCarga(posicao);
+			}
+			 else {
+				for (int i = 0; i < vetPasseio.size(); i++) {
+					imprimirDetalheCarga(i);
+				}
+			 }
+		} catch(VeicExistException vee) {
+				 vee.veicNaoExistException();  ;
+			}
+	}
+	
+	public static void excluirVeiculoPasseio(String placa)throws VeicExistException {
 			int posicao = -1;
 			posicao = buscaPlaca(placa, 1);
-			imprimirDetalhePasseio(posicao);
-
-		} else {
-			for (int i = 0; i < vetPasseio.length; i++) {
-				try { 
-					imprimirDetalhePasseio(i);
-				}catch(NullPointerException npe) {
-					break;
-				};
+			try {
+				vetPasseio.remove(posicao);
+			} catch(IndexOutOfBoundsException ioobe) {
+				throw new VeicExistException();
 			}
-		}
+			System.out.println(" Veículo Placa: "+ placa + " excluido com sucesso.");
 	}
-	
-	public static void imprimirDetalhePasseio(int i) {
-		vetPasseio[i].getMarca();		
-		System.out.printf("\n  ============== VEÍCULO DE PASSEIO nº %d ==============", i + 1);
-		System.out.println("\n  Marca.....................:" + vetPasseio[i].getMarca());
-		System.out.println("  Modelo....................:" + vetPasseio[i].getModelo());
-		System.out.println("  Cor.......................:" + vetPasseio[i].getCor());
-		System.out.println("  Placa.....................:" + vetPasseio[i].getPlaca());
-		System.out.println("  Qdt Rodas.................:" + vetPasseio[i].getQtdRodas());
-		System.out.println("  Velocidade Máxima km/h....:" + vetPasseio[i].getVelocMax());
-		System.out.println("  Velocidade Máxima  m/h....:" + vetPasseio[i].calcVel(vetPasseio[i].getVelocMax()));
-		System.out.println("  Qtd Passageiros...........:" + vetPasseio[i].getQtdPassageiros());
-		System.out.println("  Potência do Motor cv......:" + vetPasseio[i].getMotor().getPotencia());
-		System.out.println("  Qtd Pistões do Motor......:" + vetPasseio[i].getMotor().getQtdPist());
-		System.out.println("  Valor Calculado Interface.:" + vetPasseio[i].calcular());
-		
-	}
-	
-	
-	
-	public static void imprimirCarga(String placa)throws VeicExistException {
-		if(placa != null) {
+
+	public static void excluirVeiculoCarga(String placa)throws VeicExistException {
 			int posicao = -1;
-			posicao = buscaPlaca(placa, 2);
-			imprimirDetalhePasseio(posicao);
-
-		} else {
-			for (int i = 0; i < vetCarga.length; i++) {
-				try { 
-					imprimirDetalheCarga(i);
-				}catch(NullPointerException npe) {
-					break;
-				};
+			posicao = buscaPlaca(placa, 1);
+			try {
+				vetCarga.remove(posicao);
+			} catch(IndexOutOfBoundsException ioobe) {
+				throw new VeicExistException();
 			}
-		}
+			System.out.println(" Veículo Placa: "+ placa + " excluido com sucesso.");
 	}
 	
-	public static void imprimirDetalheCarga(int i) {
-		vetCarga[i].getMarca();
-		System.out.printf("\n  =============== VEÍCULO DE CARGA nº %d ===============", i + 1);
-		System.out.println("\n  Marca......................:" + vetCarga[i].getMarca());
-		System.out.println("  Modelo.....................:" + vetCarga[i].getModelo());
-		System.out.println("  Cor........................:" + vetCarga[i].getCor());
-		System.out.println("  Placa......................:" + vetCarga[i].getPlaca());
-		System.out.println("  Qdt Rodas..................:" + vetCarga[i].getQtdRodas());
-		System.out.println("  Velocidade Máxima km/h.....:" + vetCarga[i].getVelocMax());
-		System.out.println("  Velocidade Máxima cm/h.....:" + vetCarga[i].calcVel(vetCarga[i].getVelocMax()));
-		System.out.println("  Capacidade Máxima de Carga.:" + vetCarga[i].getCargaMax());
-		System.out.println("  Tara do Veículo de Carga...:" + vetCarga[i].getTara());
-		System.out.println("  Potência do Motor cv.......:" + vetCarga[i].getMotor().getPotencia());
-		System.out.println("  Qtd Pistões do Motor.......:" + vetCarga[i].getMotor().getQtdPist());
-		System.out.println("  Valor Calculado Interface..:" + vetCarga[i].calcular());
+	public static void imprimirDetalhePasseio(int i) throws VeicExistException {
+		try {
+		vetPasseio.get(i).getMarca();		
+		System.out.printf("\n  ============== VEÍCULO DE PASSEIO nº %d ==============", i + 1);
+		System.out.println("\n  Marca.....................:" + vetPasseio.get(i).getMarca());
+		System.out.println("  Modelo....................:" + vetPasseio.get(i).getModelo());
+		System.out.println("  Cor.......................:" + vetPasseio.get(i).getCor());
+		System.out.println("  Placa.....................:" + vetPasseio.get(i).getPlaca());
+		System.out.println("  Qdt Rodas.................:" + vetPasseio.get(i).getQtdRodas());
+		System.out.println("  Velocidade Máxima km/h....:" + vetPasseio.get(i).getVelocMax());
+		System.out.println("  Velocidade Máxima  m/h....:" + vetPasseio.get(i).calcVel(vetPasseio.get(i).getVelocMax()));
+		System.out.println("  Qtd Passageiros...........:" + vetPasseio.get(i).getQtdPassageiros());
+		System.out.println("  Potência do Motor cv......:" + vetPasseio.get(i).getMotor().getPotencia());
+		System.out.println("  Qtd Pistões do Motor......:" + vetPasseio.get(i).getMotor().getQtdPist());
+		System.out.println("  Valor Calculado Interface.:" + vetPasseio.get(i).calcular());
+		}
+		catch(IndexOutOfBoundsException ioobe) {
+			throw new VeicExistException();
+		}
 		
 	}
 	
+	public static void imprimirDetalheCarga(int i)throws VeicExistException {
+		try {
+		vetCarga.get(i).getMarca();
+		System.out.printf("\n  =============== VEÍCULO DE CARGA nº %d ===============", i + 1);
+		System.out.println("\n  Marca......................:" + vetCarga.get(i).getMarca());
+		System.out.println("  Modelo.....................:" + vetCarga.get(i).getModelo());
+		System.out.println("  Cor........................:" + vetCarga.get(i).getCor());
+		System.out.println("  Placa......................:" + vetCarga.get(i).getPlaca());
+		System.out.println("  Qdt Rodas..................:" + vetCarga.get(i).getQtdRodas());
+		System.out.println("  Velocidade Máxima km/h.....:" + vetCarga.get(i).getVelocMax());
+		System.out.println("  Velocidade Máxima cm/h.....:" + vetCarga.get(i).calcVel(vetCarga.get(i).getVelocMax()));
+		System.out.println("  Capacidade Máxima de Carga.:" + vetCarga.get(i).getCargaMax());
+		System.out.println("  Tara do Veículo de Carga...:" + vetCarga.get(i).getTara());
+		System.out.println("  Potência do Motor cv.......:" + vetCarga.get(i).getMotor().getPotencia());
+		System.out.println("  Qtd Pistões do Motor.......:" + vetCarga.get(i).getMotor().getQtdPist());
+		System.out.println("  Valor Calculado Interface..:" + vetCarga.get(i).calcular());
+		} catch(IndexOutOfBoundsException ioobe) {
+			throw new VeicExistException();
+		}
+	}
 }

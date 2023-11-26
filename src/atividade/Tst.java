@@ -9,6 +9,7 @@ public class Tst {
 		boolean run = true;
 		boolean cadastra = false;
 		int opcao   = 0;
+		String placa = "";
 				
 		System.out.print(" +---------------------------------------+");
 		System.out.print("\n |              BEM VINDO!!              |");
@@ -23,7 +24,9 @@ public class Tst {
 			System.out.println("4) Imprimir Todos os Veiculo de Carga");
 			System.out.println("5) Imprimir Veiculo de Passeio pela Placa");
 			System.out.println("6) Imprimir Veiculo de Carga pela Placa");
-			System.out.println("7) Sair do Sistema");
+			System.out.println("7) Excluir Veiculo de Passeio pela Placa");
+			System.out.println("8) Excluir Veiculo de Carga pela Placa");
+			System.out.println("9) Sair do Sistema");
 			System.out.println("\n============================================");
 			System.out.println("Digite uma das opções acima:");
 			
@@ -37,21 +40,14 @@ public class Tst {
 			}
 			
 			switch(opcao) {
-			
+				
 				case 1:
 					cadastra = true;
 					while(cadastra) {
 						System.out.println("  ========= CADASTRO DE VEÍCULO DE PASSEIO =========");
-						int i = BDVeiculos.achaEndVagoPasseio(); 
-						if( i == -1) {
-							System.out.println("\n   Cadastro de veículos Passeio lotado.");
-							l.entDados("\n=== Press<ENTER> to continue... ");
-							cadastra = false;
-							break;
-						}
 						
 						Passeio p = carregarPasseio();
-						BDVeiculos.cadastraVPasseio(i, p);
+						BDVeiculos.cadastraVPasseio(p);
 						cadastra = l.entDados("Deseja cadastrar novo veículo de passeio? >>"
 								+ " Digite S/N <<  ").toLowerCase().equals("s");
 					
@@ -61,16 +57,9 @@ public class Tst {
 					cadastra = true;
 					while(cadastra) {
 						System.out.println("  ========== CADASTRO DE VEÍCULO DE CARGA ==========");
-						int i = BDVeiculos.achaEndVagoCarga(); 
-						if( i == -1) {
-							System.out.println("\n   Cadastro de veículos Carga lotado.");
-							l.entDados("\n=== Press<ENTER> to continue... ");
-							cadastra = false;
-							break;
-						}
-						
+												
 						Carga c = carregarCarga();
-						BDVeiculos.cadastraVCarga(i, c);
+						BDVeiculos.cadastraVCarga(c);
 						cadastra = l.entDados("Deseja cadastrar novo veículo de passeio? >>"
 								+ " Digite S/N <<  ").toLowerCase().equals("s");
 					
@@ -79,34 +68,21 @@ public class Tst {
 				case 3:
 					System.out.println("  =========== IMPRIMIR VEÍCULO DE PASSEIO ============");
 					
-					try {
-						BDVeiculos.imprimirVeiculoPasseio(null);
-					} catch (VeicExistException vee) {
-						vee.veicNaoExistException();
-					}
+					BDVeiculos.imprimirVeiculoPasseio(null);
 					break;
 					
 				case 4:
 					System.out.println("  ============ IMPRIMIR VEÍCULO DE CARGA =============");
 					
-					try {
-						BDVeiculos.imprimirCarga(null);
-					} catch (VeicExistException vee) {
-						vee.veicNaoExistException();
-					}
+					BDVeiculos.imprimirCarga(null);
 					break;
 					
 				case 5:
 					System.out.println("  =========== IMPRIMIR VEÍCULO DE PASSEIO ============");
-					String placa = "";
 					
 					System.out.println("   Para escolher um veículo, por favor digite a placa:");
 					placa = (l.entDados("   Entre com a Placa.....................: "));
-					try {
-						BDVeiculos.imprimirVeiculoPasseio(placa);
-					} catch (VeicExistException vee) {
-						vee.veicNaoExistException();
-					}
+					BDVeiculos.imprimirVeiculoPasseio(placa);
 					break;
 					
 				case 6:
@@ -114,14 +90,34 @@ public class Tst {
 					
 					System.out.println("   Para escolher um veículo, por favor digite a placa:");
 					placa = (l.entDados("   Entre com a Placa.....................: "));
+					BDVeiculos.imprimirCarga(placa);
+					break;
+				
+				case 7:
+					System.out.println("  ============ EXCLUIR VEÍCULO DE PASSEIO ============");
+					
+					System.out.println("   Para escolher um veículo, por favor digite a placa:");
+					placa = (l.entDados("   Entre com a Placa.....................: "));
 					try {
-						BDVeiculos.imprimirCarga(placa);
-					} catch (VeicExistException vee) {
+						BDVeiculos.excluirVeiculoPasseio(placa);
+					} catch(VeicExistException vee) {
 						vee.veicNaoExistException();
 					}
 					break;
 					
-				case 7:
+				case 8:
+					System.out.println("  ============ EXCLUIR VEÍCULO DE CARGA =============");
+					
+					System.out.println("   Para escolher um veículo, por favor digite a placa:");
+					placa = (l.entDados("   Entre com a Placa.....................: "));
+					try {
+						BDVeiculos.excluirVeiculoCarga(placa);
+					} catch(VeicExistException vee) {
+						vee.veicNaoExistException();
+					}
+					break;
+					
+				case 9:
 					System.out.println("   sair");
 					try {
 						System.out.println(" .");
@@ -154,27 +150,25 @@ public class Tst {
 	}
 	
 	public static Passeio carregarPasseio() {
-		
 		Passeio vPasseio = new Passeio();
 		System.out.print(" +-------------------------------------------------+");
 		System.out.print("\n |  Insira os dados e valores solicitados abaixo:  |");
 		System.out.print("\n +-------------------------------------------------+\n");
-		vPasseio.setPlaca(l.entDados("   Entre com a Placa.....................: "));
 		try {
-			BDVeiculos.buscaPlaca(vPasseio.getPlaca(), 1);
-			VeicExistException vee = new VeicExistException();
-			vee.veicExistException();
-			return null;
-		} catch (VeicExistException vee) {
-			
-		}
+		vPasseio.setPlaca(l.entDados("   Entre com a Placa.....................: "));
+		if(BDVeiculos.buscaPlaca(vPasseio.getPlaca(), 1) != -1) {
+				System.out.println("Já existe veiculo cadastrado com esta placa.");	
+				return null;
+			}
 		vPasseio.setMarca(l.entDados("   Entre com a Marca.....................: "));
 		vPasseio.setModelo(l.entDados("   Entre com a Modelo....................: "));
 		vPasseio.setCor(l.entDados("   Entre com a Cor.......................: "));
 		vPasseio.setQtdRodas(Integer.parseInt(l.entDados("   Entre com a Qtd de Rodas..............: ")));
 		vPasseio.setQtdPassageiros(Integer.parseInt(l.entDados("   Entre com a Capacidade Passageiros....: ")));
-		try {
+		vPasseio.getMotor().setPotencia(Integer.parseInt(l.entDados("   Entre com a potência do Motor.........: ")));
+		vPasseio.getMotor().setQtdPist(Integer.parseInt(l.entDados("   Entre com a Qtd de Pistões do Motor...: ")));
 		vPasseio.setVelocMax(Float.parseFloat(l.entDados("   Entre com a Velocidade Máxima.........: ")));
+
 		} catch(VelocException ve) {
 			ve.impSolucao();
 			try {
@@ -182,39 +176,38 @@ public class Tst {
 			} catch (VelocException vPasseioe) {
 				System.out.println(vPasseioe.getCause());
 			}
-			
 		}
-		vPasseio.getMotor().setPotencia(Integer.parseInt(l.entDados("   Entre com a potência do Motor.........: ")));
-		vPasseio.getMotor().setQtdPist(Integer.parseInt(l.entDados("   Entre com a Qtd de Pistões do Motor...: ")));
-
+		catch(NumberFormatException nfe) {
+			System.out.println("O valor deve ser um número");
+			return null;
+		}
+		
 		l.entDados("\n Press<ENTER> to save... ");
 		
 		return vPasseio;
 	}
 	
 	public static Carga carregarCarga() {
-		
 		Carga vCarga = new Carga();
 		System.out.print(" +-------------------------------------------------+");
 		System.out.print("\n |  Insira os dados e valores solicitados abaixo:  |");
 		System.out.print("\n +-------------------------------------------------+\n");
-		vCarga.setPlaca(l.entDados("   Entre com a Placa......................: "));
 		try {
-			BDVeiculos.buscaPlaca(vCarga.getPlaca(), 2);
-			VeicExistException vee = new VeicExistException();
-			vee.veicExistException();
-			return null;
-		} catch (VeicExistException vee) {
-			
-		}
+		vCarga.setPlaca(l.entDados("   Entre com a Placa......................: "));
+		if(BDVeiculos.buscaPlaca(vCarga.getPlaca(), 2) != -1) {
+				System.out.println("Já existe veiculo cadastrado com esta placa.");
+				return null;
+			}
 		vCarga.setMarca(l.entDados("   Entre com a Marca......................: "));
 		vCarga.setModelo(l.entDados("   Entre com a Modelo.....................: "));
 		vCarga.setCor(l.entDados("   Entre com a Cor........................: "));
 		vCarga.setQtdRodas(Integer.parseInt(l.entDados("   Entre com a Qtd de Rodas...............: ")));
 		vCarga.setCargaMax(Integer.parseInt(l.entDados("   Entre com a Capacidade de Carga Máxima.: ")));
 		vCarga.setTara(Integer.parseInt(l.entDados("   Entre com a Tara do Veiculo de Carga...: ")));
-		try {
+		vCarga.getMotor().setPotencia(Integer.parseInt(l.entDados("   Entre com a potência do Motor..........: ")));
+		vCarga.getMotor().setQtdPist(Integer.parseInt(l.entDados("   Entre com a Qtd de Pistões do Motor....: ")));
 		vCarga.setVelocMax(Float.parseFloat(l.entDados("   Entre com a Velocidade Máxima..........: ")));
+		
 		} catch (VelocException ve) {
 			ve.impSolucao();
 			try {
@@ -222,10 +215,13 @@ public class Tst {
 			} catch (VelocException vCargae) {
 				System.out.println(vCargae.getCause());
 			}
-		} 
-		vCarga.getMotor().setPotencia(Integer.parseInt(l.entDados("   Entre com a potência do Motor..........: ")));
-		vCarga.getMotor().setQtdPist(Integer.parseInt(l.entDados("   Entre com a Qtd de Pistões do Motor....: ")));
-
+		}
+		
+		catch(NumberFormatException nfe) {
+			System.out.println("O valor deve ser um número");
+			return null;
+		}
+		
 		l.entDados("\n Press<ENTER> to save... ");
 		
 		return vCarga;
